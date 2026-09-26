@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | StudentMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Student Dashboard</h1>
+        <p class="text-muted">Manage students from one place.</p>
+    </div>
+    <a href="{% url 'student_create' %}" class="btn btn-primary">+ Add Student</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card stat-card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-muted">Total Students</h6>
+                <h2>{{ students|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Quick Actions</h5>
+                <a href="{% url 'student_list' %}" class="btn btn-outline-primary me-2">View Students</a>
+                <a href="/admin/" class="btn btn-outline-dark">Django Admin</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

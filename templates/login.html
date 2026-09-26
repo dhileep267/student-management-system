@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Login | StudentMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="mb-4">Login</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input class="form-control" type="text" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input class="form-control" type="password" name="password" required>
+                    </div>
+                    {% if form.errors %}
+                        <div class="alert alert-danger">Invalid username or password.</div>
+                    {% endif %}
+                    <button class="btn btn-primary w-100">Login</button>
+                </form>
+                <p class="text-muted mt-3 mb-0">Create an admin user with <code>python manage.py createsuperuser</code>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

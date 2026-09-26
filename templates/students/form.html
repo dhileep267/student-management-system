@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{% if student %}Edit{% else %}Add{% endif %} Student | StudentMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+<div class="col-md-7">
+<div class="card shadow-sm">
+<div class="card-body p-4">
+<h2>{% if student %}Edit Student{% else %}Add Student{% endif %}</h2>
+<form method="post">
+{% csrf_token %}
+<div class="mb-3"><label class="form-label">Name *</label><input class="form-control" name="name" value="{{ student.name|default:'' }}" required></div>
+<div class="mb-3"><label class="form-label">Age *</label><input class="form-control" type="number" min="1" name="age" value="{{ student.age|default:'' }}" required></div>
+<div class="mb-3"><label class="form-label">Email *</label><input class="form-control" type="email" name="email" value="{{ student.email|default:'' }}" required></div>
+<div class="mb-3"><label class="form-label">Course *</label><input class="form-control" name="course" value="{{ student.course|default:'BSc AI/ML' }}" required></div>
+<div class="mb-3"><label class="form-label">Phone</label><input class="form-control" name="phone" value="{{ student.phone|default:'' }}"></div>
+<button class="btn btn-primary">Save</button>
+<a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+</div></div></div></div>
+{% endblock %}
