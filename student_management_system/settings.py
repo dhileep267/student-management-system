@@ -117,3 +117,4 @@ SPECTACULAR_SETTINGS = {
         }
     },
 }
+LOGIN_URL = "/admin/login/"
