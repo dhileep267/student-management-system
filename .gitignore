@@ -11,4 +11,6 @@ db.sqlite3
 .DS_Store
 Thumbs.db
 media/
-staticfiles/
+staticfiles/students_data.json
+students_data.json
+

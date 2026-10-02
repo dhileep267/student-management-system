@@ -1,0 +1,354 @@
+[
+{
+  "model": "students.department",
+  "pk": 1,
+  "fields": {
+    "name": "AI & ML"
+  }
+},
+{
+  "model": "students.department",
+  "pk": 2,
+  "fields": {
+    "name": "Computer Science"
+  }
+},
+{
+  "model": "students.department",
+  "pk": 3,
+  "fields": {
+    "name": "Data Science"
+  }
+},
+{
+  "model": "students.student",
+  "pk": 1,
+  "fields": {
+    "name": "bharatha dhileep",
+    "age": 17,
+    "email": "bharathadhileep@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-28T14:09:19.330Z",
+    "department": 1,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 2,
+  "fields": {
+    "name": "bharatha Lalitha",
+    "age": 16,
+    "email": "lalithabharatha@gmail.com",
+    "course": "BCA",
+    "phone": null,
+    "created_at": "2026-09-28T14:09:40.111Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 3,
+  "fields": {
+    "name": "bharatha harshitha",
+    "age": 17,
+    "email": "harshitha@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-28T14:10:06.322Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 4,
+  "fields": {
+    "name": "bharatha dhileep",
+    "age": 20,
+    "email": "bharathadhileeo99@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": "9014764785",
+    "created_at": "2026-09-29T14:53:40.188Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 5,
+  "fields": {
+    "name": "dhanunjay",
+    "age": 22,
+    "email": "dhanunjay@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-29T15:19:48.341Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 6,
+  "fields": {
+    "name": "dhileep kumar",
+    "age": 20,
+    "email": "dhileep@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:52:49.432Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 7,
+  "fields": {
+    "name": "dhileep",
+    "age": 20,
+    "email": "dhileep123@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:53:56.691Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 8,
+  "fields": {
+    "name": "surya",
+    "age": 21,
+    "email": "surya@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:56:04.300Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 9,
+  "fields": {
+    "name": "sumanth",
+    "age": 19,
+    "email": "sumanth@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:56:26.399Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 10,
+  "fields": {
+    "name": "srujan",
+    "age": 23,
+    "email": "srujan@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:56:49.846Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 11,
+  "fields": {
+    "name": "varun",
+    "age": 22,
+    "email": "varun@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:57:07.744Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 12,
+  "fields": {
+    "name": "varunkumar",
+    "age": 22,
+    "email": "varunkumar@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:57:29.734Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 13,
+  "fields": {
+    "name": "kiran",
+    "age": 21,
+    "email": "kiran@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:57:53.891Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 14,
+  "fields": {
+    "name": "irfan",
+    "age": 21,
+    "email": "irfan@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T05:58:15.488Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 17,
+  "fields": {
+    "name": "STEPHEN",
+    "age": 21,
+    "email": "ravi@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-09-30T11:05:08.091Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 18,
+  "fields": {
+    "name": "arjun",
+    "age": 22,
+    "email": "arjun@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": "9876543210",
+    "created_at": "2026-10-01T04:38:03.079Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 19,
+  "fields": {
+    "name": "Test Student Updated",
+    "age": 25,
+    "email": "testupdated@gmail.com",
+    "course": "BCA",
+    "phone": "9999999999",
+    "created_at": "2026-10-01T05:06:02.096Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 20,
+  "fields": {
+    "name": "sandeep kumar",
+    "age": 25,
+    "email": "sandeep@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": "8888888888",
+    "created_at": "2026-10-01T05:38:06.676Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 21,
+  "fields": {
+    "name": "Test Student",
+    "age": 21,
+    "email": "teststudent@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": "9876543210",
+    "created_at": "2026-10-01T06:11:15.082Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 22,
+  "fields": {
+    "name": "Test User",
+    "age": 22,
+    "email": "testuser@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": "9876543210",
+    "created_at": "2026-10-01T12:15:10.996Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 23,
+  "fields": {
+    "name": "Admin Test",
+    "age": 22,
+    "email": "admintest@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": "9876543210",
+    "created_at": "2026-10-02T09:31:40.451Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.student",
+  "pk": 24,
+  "fields": {
+    "name": "Test Image Student",
+    "age": 22,
+    "email": "testimage@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": "9876543210",
+    "created_at": "2026-10-02T13:26:00.486Z",
+    "department": 1,
+    "profile_image": "students/WhatsApp_Image_2026-09-18_at_1.24.00_PM.jpeg"
+  }
+},
+{
+  "model": "students.student",
+  "pk": 25,
+  "fields": {
+    "name": "teststudent",
+    "age": 22,
+    "email": "test@gmail.com",
+    "course": "BSc AI/ML",
+    "phone": null,
+    "created_at": "2026-10-02T17:33:06.886Z",
+    "department": null,
+    "profile_image": ""
+  }
+},
+{
+  "model": "students.studentprofile",
+  "pk": 1,
+  "fields": {
+    "student": 1,
+    "address": "Hyderabad",
+    "date_of_birth": "2007-05-10"
+  }
+}
+]
