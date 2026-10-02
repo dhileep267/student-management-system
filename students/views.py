@@ -31,14 +31,21 @@ def web_login(request):
         return redirect("student_list")
 
     if request.method == "POST":
+
         username = request.POST.get("username")
         password = request.POST.get("password")
+
+        print("LOGIN DEBUG")
+        print("USERNAME:", repr(username))
+        print("PASSWORD RECEIVED:", bool(password))
 
         user = authenticate(
             request,
             username=username,
             password=password
         )
+
+        print("AUTHENTICATED USER:", user)
 
         if user is not None:
             login(request, user)
