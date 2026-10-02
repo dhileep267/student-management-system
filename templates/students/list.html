@@ -1,48 +1,237 @@
 {% extends "base.html" %}
+
 {% block title %}Students | StudentMS{% endblock %}
+
 {% block content %}
+
 <div class="d-flex justify-content-between align-items-center mb-3">
+
     <h1>Students</h1>
-    <a href="{% url 'student_create' %}" class="btn btn-primary">+ Add Student</a>
+
+    <a
+        href="{% url 'student_create' %}"
+        class="btn btn-primary"
+    >
+        + Add Student
+    </a>
+
 </div>
+
+
+<!-- SEARCH + FILTER -->
 
 <form class="row g-2 mb-4" method="get">
-    <div class="col-md-10">
-        <input class="form-control" name="q" value="{{ query }}" placeholder="Search by student name">
+
+    <!-- Search -->
+
+    <div class="col-md-5">
+
+        <input
+            class="form-control"
+            type="text"
+            name="q"
+            value="{{ query }}"
+            placeholder="Search by student name"
+        >
+
     </div>
+
+
+    <!-- Age Filter -->
+
+    <div class="col-md-5">
+
+        <input
+            class="form-control"
+            type="number"
+            name="age"
+            value="{{ age }}"
+            placeholder="Filter by age"
+        >
+
+    </div>
+
+
+    <!-- Button -->
+
     <div class="col-md-2">
-        <button class="btn btn-dark w-100">Search</button>
+
+        <button
+            type="submit"
+            class="btn btn-dark w-100"
+        >
+            Search
+        </button>
+
     </div>
+
 </form>
 
+
+<!-- STUDENT TABLE -->
+
 <div class="card shadow-sm">
-<div class="table-responsive">
-<table class="table table-hover align-middle mb-0">
-<thead class="table-dark">
-<tr><th>ID</th><th>Name</th><th>Age</th><th>Email</th><th>Course</th><th>Phone</th><th>Actions</th></tr>
-</thead>
-<tbody>
-{% for student in students %}
-<tr>
-    <td>{{ student.id }}</td>
-    <td>{{ student.name }}</td>
-    <td>{{ student.age }}</td>
-    <td>{{ student.email }}</td>
-    <td>{{ student.course }}</td>
-    <td>{{ student.phone|default:"-" }}</td>
-    <td class="text-nowrap">
-        <a class="btn btn-sm btn-warning" href="{% url 'student_update' student.pk %}">Edit</a>
-        <form method="post" action="{% url 'student_delete' student.pk %}" class="d-inline">
-            {% csrf_token %}
-            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this student?')">Delete</button>
-        </form>
-    </td>
-</tr>
-{% empty %}
-<tr><td colspan="7" class="text-center py-4">No students found.</td></tr>
-{% endfor %}
-</tbody>
-</table>
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle mb-0">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for student in page_obj %}
+
+                <tr>
+
+                    <td>
+                        {{ student.id }}
+                    </td>
+
+                    <td>
+                        {{ student.name }}
+                    </td>
+
+                    <td>
+                        {{ student.age }}
+                    </td>
+
+                    <td>
+                        {{ student.email }}
+                    </td>
+
+                    <td>
+                        {{ student.course }}
+                    </td>
+
+                    <td>
+                        {{ student.phone|default:"-" }}
+                    </td>
+
+
+                    <td class="text-nowrap">
+
+                        {% if user.is_staff %}
+
+                            <!-- EDIT -->
+
+                            <a
+                                class="btn btn-sm btn-warning"
+                                href="{% url 'student_update' student.pk %}"
+                            >
+                                Edit
+                            </a>
+
+
+                            <!-- DELETE -->
+
+                            <form
+                                method="post"
+                                action="{% url 'student_delete' student.pk %}"
+                                class="d-inline"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Delete this student?')"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                View only
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+
+                {% empty %}
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="text-center py-4"
+                    >
+                        No students found.
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
 </div>
+
+
+<!-- PAGINATION -->
+
+<div class="d-flex justify-content-center align-items-center mt-4">
+
+
+    {% if page_obj.has_previous %}
+
+        <a
+            href="?page={{ page_obj.previous_page_number }}&q={{ query }}&age={{ age }}"
+            class="btn btn-secondary me-2"
+        >
+            Previous
+        </a>
+
+    {% endif %}
+
+
+    <span class="btn btn-light">
+
+        Page {{ page_obj.number }}
+        of {{ page_obj.paginator.num_pages }}
+
+    </span>
+
+
+    {% if page_obj.has_next %}
+
+        <a
+            href="?page={{ page_obj.next_page_number }}&q={{ query }}&age={{ age }}"
+            class="btn btn-primary ms-2"
+        >
+            Next
+        </a>
+
+    {% endif %}
+
+
 </div>
+
 {% endblock %}

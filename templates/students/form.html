@@ -1,20 +1,169 @@
+```django
 {% extends "base.html" %}
-{% block title %}{% if student %}Edit{% else %}Add{% endif %} Student | StudentMS{% endblock %}
-{% block content %}
-<div class="row justify-content-center">
-<div class="col-md-7">
-<div class="card shadow-sm">
-<div class="card-body p-4">
-<h2>{% if student %}Edit Student{% else %}Add Student{% endif %}</h2>
-<form method="post">
-{% csrf_token %}
-<div class="mb-3"><label class="form-label">Name *</label><input class="form-control" name="name" value="{{ student.name|default:'' }}" required></div>
-<div class="mb-3"><label class="form-label">Age *</label><input class="form-control" type="number" min="1" name="age" value="{{ student.age|default:'' }}" required></div>
-<div class="mb-3"><label class="form-label">Email *</label><input class="form-control" type="email" name="email" value="{{ student.email|default:'' }}" required></div>
-<div class="mb-3"><label class="form-label">Course *</label><input class="form-control" name="course" value="{{ student.course|default:'BSc AI/ML' }}" required></div>
-<div class="mb-3"><label class="form-label">Phone</label><input class="form-control" name="phone" value="{{ student.phone|default:'' }}"></div>
-<button class="btn btn-primary">Save</button>
-<a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
-</form>
-</div></div></div></div>
+
+{% block title %}
+    {% if student %}Edit{% else %}Add{% endif %} Student | StudentMS
 {% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-7">
+
+        <div class="card shadow-sm">
+
+            <div class="card-body p-4">
+
+                <h2 class="mb-4">
+                    {% if student %}
+                        Edit Student
+                    {% else %}
+                        Add Student
+                    {% endif %}
+                </h2>
+
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+
+                    <!-- NON-FIELD ERRORS -->
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-danger">
+
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- NAME -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Name
+                        </label>
+
+                        {{ form.name }}
+
+                        {% for error in form.name.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- AGE -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Age
+                        </label>
+
+                        {{ form.age }}
+
+                        {% for error in form.age.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Email
+                        </label>
+
+                        {{ form.email }}
+
+                        {% for error in form.email.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- COURSE -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Course
+                        </label>
+
+                        {{ form.course }}
+
+                        {% for error in form.course.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Phone
+                        </label>
+
+                        {{ form.phone }}
+
+                        {% for error in form.phone.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <button class="btn btn-primary" type="submit">
+                        {% if student %}
+                            Update Student
+                        {% else %}
+                            Add Student
+                        {% endif %}
+                    </button>
+
+
+                    <a
+                        href="{% url 'student_list' %}"
+                        class="btn btn-secondary"
+                    >
+                        Cancel
+                    </a>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+```

@@ -1,10 +1,28 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+from .views import StudentViewSet,RegisterView , LogoutView, DashboardView
+
+
+router = DefaultRouter()
+
+router.register("students", StudentViewSet, basename="student")
+
 
 urlpatterns = [
-    path("", views.dashboard, name="dashboard"),
-    path("students/", views.student_list, name="student_list"),
-    path("students/add/", views.student_create, name="student_create"),
-    path("students/<int:pk>/edit/", views.student_update, name="student_update"),
-    path("students/<int:pk>/delete/", views.student_delete, name="student_delete"),
+
+    path("", include(router.urls)),
+
+    path("token/", TokenObtainPairView.as_view(),name="token_obtain_pair"),
+
+    path("token/refresh/", TokenRefreshView.as_view(),name="token_refresh"),
+    path("register/", RegisterView.as_view(), name="register"),
+    path("logout/", LogoutView.as_view(), name="logout"),
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
+    
 ]
