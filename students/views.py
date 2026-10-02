@@ -1,8 +1,9 @@
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Avg, Count
+from django.shortcuts import get_object_or_404, redirect, render
 
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,44 +13,67 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from drf_spectacular.utils import extend_schema, OpenApiResponse
+
 from .forms import StudentForm
 from .models import Student, Department
 from .permissions import IsAdminOrReadOnly
 from .serializers import StudentSerializer, RegisterSerializer
 
 
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+
+# =========================
+# WEB LOGIN
+# =========================
+
+def web_login(request):
+    if request.user.is_authenticated:
+        return redirect("student_list")
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None:
+            login(request, user)
+            return redirect("student_list")
+
+        messages.error(request, "Invalid username or password.")
+
+    return render(request, "students/login.html")
 
 
-# =====================================================
-# NORMAL DJANGO VIEWS
-# =====================================================
+def web_logout(request):
+    logout(request)
+    return redirect("web_login")
+
+
+# =========================
+# STUDENT WEB PAGES
+# =========================
 
 @login_required
 def student_list(request):
-
     query = request.GET.get("q", "").strip()
     age = request.GET.get("age", "").strip()
 
     students = Student.objects.all()
 
-    # Search
     if query:
-        students = students.filter(
-            name__icontains=query
-        )
+        students = students.filter(name__icontains=query)
 
-    # Filter
     if age:
-        students = students.filter(
-            age=age
-        )
+        students = students.filter(age=age)
 
-    # Pagination
     paginator = Paginator(students, 10)
 
     page_number = request.GET.get("page")
-
     page_obj = paginator.get_page(page_number)
 
     return render(
@@ -58,25 +82,22 @@ def student_list(request):
         {
             "page_obj": page_obj,
             "query": query,
-            "age": age
-        }
+            "age": age,
+        },
     )
 
 
 @login_required
 def student_create(request):
-
     if request.method == "POST":
         form = StudentForm(request.POST)
 
         if form.is_valid():
             form.save()
-
             messages.success(
                 request,
                 "Student added successfully."
             )
-
             return redirect("student_list")
 
     else:
@@ -85,28 +106,22 @@ def student_create(request):
     return render(
         request,
         "students/form.html",
-        {"form": form}
+        {"form": form},
     )
 
 
 @login_required
 def student_update(request, pk):
-
     if not request.user.is_staff:
         messages.error(
             request,
             "You don't have permission to edit students."
         )
-
         return redirect("student_list")
 
-    student = get_object_or_404(
-        Student,
-        pk=pk
-    )
+    student = get_object_or_404(Student, pk=pk)
 
     if request.method == "POST":
-
         form = StudentForm(
             request.POST,
             instance=student
@@ -114,44 +129,35 @@ def student_update(request, pk):
 
         if form.is_valid():
             form.save()
-
             messages.success(
                 request,
                 "Student updated successfully."
             )
-
             return redirect("student_list")
 
     else:
-        form = StudentForm(
-            instance=student
-        )
+        form = StudentForm(instance=student)
 
     return render(
         request,
         "students/form.html",
         {
             "form": form,
-            "student": student
-        }
+            "student": student,
+        },
     )
 
 
 @login_required
 def student_delete(request, pk):
-
     if not request.user.is_staff:
         messages.error(
             request,
             "You don't have permission to delete students."
         )
-
         return redirect("student_list")
 
-    student = get_object_or_404(
-        Student,
-        pk=pk
-    )
+    student = get_object_or_404(Student, pk=pk)
 
     if request.method == "POST":
         student.delete()
@@ -164,36 +170,32 @@ def student_delete(request, pk):
     return redirect("student_list")
 
 
-# =====================================================
-# DRF VIEWSET
-# =====================================================
+# =========================
+# DRF STUDENT API
+# =========================
 
 class StudentViewSet(viewsets.ModelViewSet):
-
     queryset = Student.objects.all()
-
     serializer_class = StudentSerializer
-
     permission_classes = [
         IsAuthenticated,
-        IsAdminOrReadOnly
+        IsAdminOrReadOnly,
     ]
 
 
-# =====================================================
-# REGISTER
-# =====================================================
+# =========================
+# API REGISTER
+# =========================
 
 class RegisterView(generics.CreateAPIView):
-
     serializer_class = RegisterSerializer
-
     permission_classes = [AllowAny]
 
 
-# =====================================================
-# LOGOUT
-# =====================================================
+# =========================
+# API LOGOUT
+# =========================
+
 @extend_schema(
     request=None,
     responses={
@@ -203,43 +205,46 @@ class RegisterView(generics.CreateAPIView):
         400: OpenApiResponse(
             description="Invalid or missing refresh token"
         ),
-    }
+    },
 )
 class LogoutView(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-
         refresh_token = request.data.get("refresh")
 
         if not refresh_token:
             return Response(
-                {"error": "Refresh token is required"},
-                status=status.HTTP_400_BAD_REQUEST
+                {
+                    "error": "Refresh token is required"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
             token = RefreshToken(refresh_token)
-
             token.blacklist()
 
             return Response(
-                {"message": "Successfully logged out"},
-                status=status.HTTP_200_OK
+                {
+                    "message": "Successfully logged out"
+                },
+                status=status.HTTP_200_OK,
             )
 
         except TokenError as e:
-
             return Response(
-                {"error": str(e)},
-                status=status.HTTP_400_BAD_REQUEST
+                {
+                    "error": str(e)
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
 
-# =====================================================
-# DASHBOARD / STATISTICS API
-# =====================================================
+# =========================
+# DASHBOARD API
+# =========================
+
 @extend_schema(
     responses={
         200: OpenApiResponse(
@@ -248,25 +253,21 @@ class LogoutView(APIView):
     }
 )
 class DashboardView(APIView):
-
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-
-        # Total students
         total_students = Student.objects.count()
 
-        # Total departments
         total_departments = Department.objects.count()
 
-        # Average age
         average_age = Student.objects.aggregate(
             average_age=Avg("age")
         )["average_age"]
 
-        # Students in each department
-        students_per_department = Department.objects.annotate(
-            student_count=Count("students")
+        students_per_department = (
+            Department.objects.annotate(
+                student_count=Count("students")
+            )
         )
 
         department_data = {}
@@ -274,11 +275,10 @@ class DashboardView(APIView):
         for department in students_per_department:
             department_data[department.name] = department.student_count
 
-        # Students in each course
-        students_per_course = Student.objects.values(
-            "course"
-        ).annotate(
-            student_count=Count("id")
+        students_per_course = (
+            Student.objects
+            .values("course")
+            .annotate(student_count=Count("id"))
         )
 
         course_data = {}
@@ -286,11 +286,89 @@ class DashboardView(APIView):
         for course in students_per_course:
             course_data[course["course"]] = course["student_count"]
 
-        # Final response
-        return Response({
+        return Response(
+            {
+                "total_students": total_students,
+                "total_departments": total_departments,
+                "average_age": (
+                    round(average_age, 2)
+                    if average_age
+                    else 0
+                ),
+                "students_per_department": department_data,
+                "students_per_course": course_data,
+            }
+        )
+
+@login_required
+def web_dashboard(request):
+
+    # =========================
+    # BASIC STATISTICS
+    # =========================
+
+    total_students = Student.objects.count()
+
+    total_departments = Department.objects.count()
+
+    average_age = Student.objects.aggregate(
+        average_age=Avg("age")
+    )["average_age"]
+
+
+    # =========================
+    # STUDENTS PER DEPARTMENT
+    # =========================
+
+    students_per_department = list(
+        Department.objects
+        .annotate(student_count=Count("students"))
+        .values("name", "student_count")
+    )
+
+
+    # =========================
+    # STUDENTS PER COURSE
+    # =========================
+
+    students_per_course = list(
+        Student.objects
+        .values("course")
+        .annotate(student_count=Count("id"))
+    )
+
+
+    # =========================
+    # RECENT STUDENTS
+    # =========================
+
+    recent_students = Student.objects.order_by(
+        "-created_at"
+    )[:5]
+
+
+    # =========================
+    # SEND DATA TO TEMPLATE
+    # =========================
+
+    return render(
+        request,
+        "dashboard.html",
+        {
             "total_students": total_students,
+
             "total_departments": total_departments,
-            "average_age": round(average_age, 2) if average_age else 0,
-            "students_per_department": department_data,
-            "students_per_course": course_data
-        })
+
+            "average_age": (
+                round(average_age, 2)
+                if average_age
+                else 0
+            ),
+
+            "students_per_department": students_per_department,
+
+            "students_per_course": students_per_course,
+
+            "recent_students": recent_students,
+        },
+    )

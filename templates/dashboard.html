@@ -1,31 +1,656 @@
 {% extends "base.html" %}
+
 {% block title %}Dashboard | StudentMS{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+
     <div>
-        <h1>Student Dashboard</h1>
-        <p class="text-muted">Manage students from one place.</p>
+        <h1 class="fw-bold mb-1">
+            📊 Dashboard
+        </h1>
+
+        <p class="text-muted mb-0">
+            Overview of your Student Management System
+        </p>
     </div>
-    <a href="{% url 'student_create' %}" class="btn btn-primary">+ Add Student</a>
+
+    <a
+        href="{% url 'student_create' %}"
+        class="btn btn-primary mt-3 mt-md-0"
+    >
+        ➕ Add Student
+    </a>
+
 </div>
 
-<div class="row g-3">
+
+<!-- =========================
+     STATISTICS CARDS
+========================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Total Students -->
+
     <div class="col-md-4">
-        <div class="card stat-card shadow-sm">
-            <div class="card-body">
-                <h6 class="text-muted">Total Students</h6>
-                <h2>{{ students|length }}</h2>
+
+        <div class="card stat-card shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <p class="text-muted mb-1">
+                            Total Students
+                        </p>
+
+                        <h2 class="fw-bold mb-0">
+                            {{ total_students }}
+                        </h2>
+                    </div>
+
+                    <div class="fs-1">
+                        👨‍🎓
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
+
     </div>
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5>Quick Actions</h5>
-                <a href="{% url 'student_list' %}" class="btn btn-outline-primary me-2">View Students</a>
-                <a href="/admin/" class="btn btn-outline-dark">Django Admin</a>
+
+
+    <!-- Total Departments -->
+
+    <div class="col-md-4">
+
+        <div class="card stat-card shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <p class="text-muted mb-1">
+                            Total Departments
+                        </p>
+
+                        <h2 class="fw-bold mb-0">
+                            {{ total_departments }}
+                        </h2>
+                    </div>
+
+                    <div class="fs-1">
+                        🏢
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
+
     </div>
+
+
+    <!-- Average Age -->
+
+    <div class="col-md-4">
+
+        <div class="card stat-card shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <p class="text-muted mb-1">
+                            Average Age
+                        </p>
+
+                        <h2 class="fw-bold mb-0">
+                            {{ average_age }}
+                        </h2>
+                    </div>
+
+                    <div class="fs-1">
+                        🎂
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+
+<!-- =========================
+     CHARTS
+========================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Department Chart -->
+
+    <div class="col-lg-7">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-1">
+                    🏢 Students by Department
+                </h4>
+
+                <p class="text-muted mb-4">
+                    Number of students in each department
+                </p>
+
+                <div style="height: 320px;">
+
+                    <canvas id="departmentChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Course Chart -->
+
+    <div class="col-lg-5">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-1">
+                    📚 Students by Course
+                </h4>
+
+                <p class="text-muted mb-4">
+                    Distribution of students by course
+                </p>
+
+                <div style="height: 320px;">
+
+                    <canvas id="courseChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     DEPARTMENT DETAILS
+========================= -->
+
+<div class="row g-4 mb-4">
+
+    <div class="col-lg-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-3">
+                    🏢 Department Details
+                </h4>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Department</th>
+                                <th class="text-end">
+                                    Students
+                                </th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for department in students_per_department %}
+
+                            <tr>
+
+                                <td class="fw-semibold">
+                                    {{ department.name }}
+                                </td>
+
+                                <td class="text-end">
+
+                                    <span class="badge text-bg-primary">
+                                        {{ department.student_count }}
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="2"
+                                    class="text-center text-muted py-4"
+                                >
+                                    No departments found.
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         COURSE DETAILS
+    ========================= -->
+
+    <div class="col-lg-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-3">
+                    📚 Course Details
+                </h4>
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Course</th>
+                                <th class="text-end">
+                                    Students
+                                </th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for course in students_per_course %}
+
+                            <tr>
+
+                                <td class="fw-semibold">
+                                    {{ course.course }}
+                                </td>
+
+                                <td class="text-end">
+
+                                    <span class="badge text-bg-success">
+                                        {{ course.student_count }}
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+
+                                <td
+                                    colspan="2"
+                                    class="text-center text-muted py-4"
+                                >
+                                    No courses found.
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     RECENT STUDENTS
+========================= -->
+
+<div class="card border-0 shadow-sm mb-4">
+
+    <div class="card-body p-4">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+
+            <div>
+
+                <h4 class="fw-bold mb-1">
+                    👨‍🎓 Recent Students
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Latest students added to the system
+                </p>
+
+            </div>
+
+            <a
+                href="{% url 'student_list' %}"
+                class="btn btn-outline-primary btn-sm mt-3 mt-md-0"
+            >
+                View All Students
+            </a>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Name</th>
+
+                        <th>Age</th>
+
+                        <th>Email</th>
+
+                        <th>Course</th>
+
+                        <th>Added</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for student in recent_students %}
+
+                    <tr>
+
+                        <td>
+                            #{{ student.id }}
+                        </td>
+
+                        <td class="fw-semibold">
+                            {{ student.name }}
+                        </td>
+
+                        <td>
+                            {{ student.age }}
+                        </td>
+
+                        <td>
+                            {{ student.email }}
+                        </td>
+
+                        <td>
+
+                            <span class="badge text-bg-primary">
+                                {{ student.course }}
+                            </span>
+
+                        </td>
+
+                        <td>
+                            {{ student.created_at|date:"d M Y" }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="text-center text-muted py-5"
+                        >
+
+                            <div class="fs-1">
+                                🎓
+                            </div>
+
+                            <h5 class="mt-2">
+                                No students found
+                            </h5>
+
+                            <p class="mb-0">
+                                Add your first student to see them here.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     CHART DATA
+========================= -->
+
+{{ students_per_department|json_script:"department-data" }}
+
+{{ students_per_course|json_script:"course-data" }}
+
+
+<!-- =========================
+     CHART.JS
+========================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+    // =========================
+    // GET DJANGO DATA
+    // =========================
+
+    const departmentData = JSON.parse(
+        document.getElementById("department-data").textContent
+    );
+
+    const courseData = JSON.parse(
+        document.getElementById("course-data").textContent
+    );
+
+
+    // =========================
+    // DEPARTMENT DATA
+    // =========================
+
+    const departmentLabels = departmentData.map(
+        department => department.name
+    );
+
+    const departmentValues = departmentData.map(
+        department => department.student_count
+    );
+
+
+    // =========================
+    // COURSE DATA
+    // =========================
+
+    const courseLabels = courseData.map(
+        course => course.course
+    );
+
+    const courseValues = courseData.map(
+        course => course.student_count
+    );
+
+
+    // =========================
+    // DEPARTMENT BAR CHART
+    // =========================
+
+    const departmentCanvas =
+        document.getElementById("departmentChart");
+
+    if (departmentCanvas) {
+
+        new Chart(
+            departmentCanvas,
+            {
+                type: "bar",
+
+                data: {
+
+                    labels: departmentLabels,
+
+                    datasets: [
+                        {
+                            label: "Students",
+
+                            data: departmentValues
+                        }
+                    ]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+                                stepSize: 1
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =========================
+    // COURSE DOUGHNUT CHART
+    // =========================
+
+    const courseCanvas =
+        document.getElementById("courseChart");
+
+    if (courseCanvas) {
+
+        new Chart(
+            courseCanvas,
+            {
+                type: "doughnut",
+
+                data: {
+
+                    labels: courseLabels,
+
+                    datasets: [
+                        {
+                            label: "Students",
+
+                            data: courseValues
+                        }
+                    ]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false
+
+                }
+
+            }
+        );
+
+    }
+
+</script>
+
 {% endblock %}

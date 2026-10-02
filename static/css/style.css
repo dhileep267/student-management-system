@@ -1,5 +1,112 @@
-body { background: #f5f7fb; }
-.card { border: 0; }
-.stat-card { min-height: 130px; }
-.navbar-brand { letter-spacing: .5px; }
-.table td, .table th { vertical-align: middle; }
+body {
+font-family: Arial, sans-serif;
+}
+
+/* =========================
+NAVBAR
+========================= */
+
+.navbar-brand {
+letter-spacing: 0.5px;
+}
+
+/* =========================
+CARDS
+========================= */
+
+.card {
+border-radius: 12px;
+}
+
+.card:hover {
+transform: translateY(-2px);
+transition: 0.2s ease;
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+.btn {
+border-radius: 8px;
+}
+
+/* =========================
+TABLE
+========================= */
+
+.table {
+background: white;
+}
+
+.table th {
+white-space: nowrap;
+}
+
+.table td {
+vertical-align: middle;
+}
+
+/* =========================
+STUDENT PAGE
+========================= */
+
+.student-actions {
+white-space: nowrap;
+}
+
+/* =========================
+FORMS
+========================= */
+
+.form-control,
+.form-select {
+border-radius: 8px;
+padding: 10px 12px;
+}
+
+.form-control:focus,
+.form-select:focus {
+box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+/* =========================
+ALERTS
+========================= */
+
+.alert {
+border-radius: 10px;
+}
+
+/* =========================
+DASHBOARD
+========================= */
+
+.stat-card {
+border: none;
+border-radius: 14px;
+}
+
+/* =========================
+MOBILE
+========================= */
+
+@media (max-width: 768px) {
+
+
+main {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+.navbar .container-fluid {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+.table {
+    font-size: 14px;
+}
+
+}
+
