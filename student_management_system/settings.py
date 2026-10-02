@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
@@ -53,19 +54,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "student_management_system.wsgi.application"
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'student_manage_sys',
-        'USER': 'postgres',
-        'PASSWORD': 'Lalitha#77',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-
-    }
-
+    "default": dj_database_url.config(
+        default="postgresql://postgres:Lalitha%2377@localhost:5432/student_manage_sys"
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = []
 
