@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.models import User
 
 from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -54,8 +55,32 @@ def web_login(request):
         messages.error(request, "Invalid username or password.")
 
     return render(request, "students/login.html")
+def web_register(request):
+    if request.user.is_authenticated:
+        return redirect("student_list")
 
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+            return render(request, "students/register.html")
+
+        if not username or not password:
+            messages.error(request, "Username and password are required.")
+            return render(request, "students/register.html")
+
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
+
+        login(request, user)
+
+        return redirect("student_list")
+
+    return render(request, "students/register.html")
 def web_logout(request):
     logout(request)
     return redirect("web_login")

@@ -1,0 +1,5 @@
+body { background: #f5f7fb; }
+.card { border: 0; }
+.stat-card { min-height: 130px; }
+.navbar-brand { letter-spacing: .5px; }
+.table td, .table th { vertical-align: middle; }

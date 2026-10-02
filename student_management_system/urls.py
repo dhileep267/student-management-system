@@ -15,6 +15,7 @@ from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
 )
+from students.views import student_list, web_logout, web_login, web_register
 
 
 urlpatterns = [
@@ -95,6 +96,7 @@ urlpatterns = [
         ),
         name="swagger-ui"
     ),
+    path("register/", web_register, name="web_register"),
 ]
 
 

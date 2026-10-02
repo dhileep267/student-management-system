@@ -6,6 +6,18 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from .views import (
+    StudentViewSet,
+    RegisterView,
+    LogoutView,
+    DashboardView,
+    web_login,
+    web_logout,
+    web_register,
+    student_create,
+    student_update,
+    student_delete,
+)
 
 from .views import StudentViewSet,RegisterView , LogoutView, DashboardView,web_login,web_logout
 
@@ -38,4 +50,5 @@ path("dashboard/", DashboardView.as_view(), name="dashboard"),
 path("create/", student_create, name="student_create"),
 path("update/<int:pk>/", student_update, name="student_update"),
 path("delete/<int:pk>/", student_delete, name="student_delete"),
+path("register/", web_register, name="web_register"),
 ]
