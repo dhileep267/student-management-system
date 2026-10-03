@@ -95,7 +95,7 @@ def student_list(request):
     query = request.GET.get("q", "").strip()
     age = request.GET.get("age", "").strip()
 
-    students = Student.objects.all()
+    students = Student.objects.all().order_by("id")
 
     if query:
         students = students.filter(name__icontains=query)
