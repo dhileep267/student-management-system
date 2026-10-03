@@ -26,19 +26,22 @@ from .serializers import StudentSerializer, RegisterSerializer
 # =========================
 # WEB LOGIN
 # =========================
-
 def web_login(request):
+    if request.user.is_authenticated:
+        logout(request)
+
+    return render(
+        request,
+        "students/login.html"
+    )
+
+def staff_login(request):
     if request.user.is_authenticated:
         return redirect("student_list")
 
     if request.method == "POST":
-
         username = request.POST.get("username")
         password = request.POST.get("password")
-
-        print("LOGIN DEBUG")
-        print("USERNAME:", repr(username))
-        print("PASSWORD RECEIVED:", bool(password))
 
         user = authenticate(
             request,
@@ -46,15 +49,64 @@ def web_login(request):
             password=password
         )
 
-        print("AUTHENTICATED USER:", user)
-
-        if user is not None:
+        if user is not None and user.is_staff:
             login(request, user)
             return redirect("student_list")
 
-        messages.error(request, "Invalid username or password.")
+        messages.error(
+            request,
+            "Invalid staff username or password."
+        )
 
-    return render(request, "students/login.html")
+    return render(request, "students/staff_login.html")
+
+
+def student_login(request):
+    if request.user.is_authenticated:
+        return redirect("student_dashboard")
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
+
+        if user is not None and not user.is_staff:
+            login(request, user)
+            return redirect("student_list")
+
+        messages.error(
+            request,
+            "Invalid student username or password."
+        )
+
+    return render(request, "students/student_login.html")
+@login_required
+def student_dashboard(request):
+    if request.user.is_staff:
+        return redirect("web_dashboard")
+
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        messages.error(
+            request,
+            "No student profile is linked to this account."
+        )
+        logout(request)
+        return redirect("web_login")
+
+    return render(
+        request,
+        "students/student_dashboard.html",
+        {
+            "student": student,
+        }
+    )
 def web_register(request):
     if request.user.is_authenticated:
         return redirect("student_list")
@@ -95,17 +147,31 @@ def student_list(request):
     query = request.GET.get("q", "").strip()
     age = request.GET.get("age", "").strip()
 
-    students = Student.objects.all().order_by("id")
+    if request.user.is_staff:
+        students = Student.objects.all()
 
-    if query:
-        students = students.filter(name__icontains=query)
+        if query:
+            students = students.filter(
+                name__icontains=query
+            )
 
-    if age:
-        students = students.filter(age=age)
+        if age:
+            students = students.filter(
+                age=age
+            )
+
+    else:
+        try:
+            students = Student.objects.filter(
+                user=request.user
+            )
+        except Exception:
+            students = Student.objects.none()
 
     paginator = Paginator(students, 10)
 
     page_number = request.GET.get("page")
+
     page_obj = paginator.get_page(page_number)
 
     return render(
@@ -118,18 +184,26 @@ def student_list(request):
         },
     )
 
-
 @login_required
 def student_create(request):
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "Only staff members can add students."
+        )
+        return redirect("student_list")
+
     if request.method == "POST":
         form = StudentForm(request.POST)
 
         if form.is_valid():
             form.save()
+
             messages.success(
                 request,
                 "Student added successfully."
             )
+
             return redirect("student_list")
 
     else:
@@ -138,7 +212,7 @@ def student_create(request):
     return render(
         request,
         "students/form.html",
-        {"form": form},
+        {"form": form}
     )
 
 
@@ -147,11 +221,14 @@ def student_update(request, pk):
     if not request.user.is_staff:
         messages.error(
             request,
-            "You don't have permission to edit students."
+            "Only staff members can edit students."
         )
         return redirect("student_list")
 
-    student = get_object_or_404(Student, pk=pk)
+    student = get_object_or_404(
+        Student,
+        pk=pk
+    )
 
     if request.method == "POST":
         form = StudentForm(
@@ -161,14 +238,18 @@ def student_update(request, pk):
 
         if form.is_valid():
             form.save()
+
             messages.success(
                 request,
                 "Student updated successfully."
             )
+
             return redirect("student_list")
 
     else:
-        form = StudentForm(instance=student)
+        form = StudentForm(
+            instance=student
+        )
 
     return render(
         request,
@@ -176,7 +257,7 @@ def student_update(request, pk):
         {
             "form": form,
             "student": student,
-        },
+        }
     )
 
 
@@ -185,11 +266,14 @@ def student_delete(request, pk):
     if not request.user.is_staff:
         messages.error(
             request,
-            "You don't have permission to delete students."
+            "Only staff members can delete students."
         )
         return redirect("student_list")
 
-    student = get_object_or_404(Student, pk=pk)
+    student = get_object_or_404(
+        Student,
+        pk=pk
+    )
 
     if request.method == "POST":
         student.delete()
@@ -201,19 +285,26 @@ def student_delete(request, pk):
 
     return redirect("student_list")
 
-
 # =========================
 # DRF STUDENT API
 # =========================
 
 class StudentViewSet(viewsets.ModelViewSet):
-    queryset = Student.objects.all()
+
     serializer_class = StudentSerializer
+
     permission_classes = [
         IsAuthenticated,
         IsAdminOrReadOnly,
     ]
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Student.objects.all()
+
+        return Student.objects.filter(
+            user=self.request.user
+        )
 
 # =========================
 # API REGISTER
@@ -229,7 +320,17 @@ class RegisterView(generics.CreateAPIView):
 # =========================
 
 @extend_schema(
-    request=None,
+    request={
+        "application/json": {
+            "type": "object",
+            "properties": {
+                "refresh": {
+                    "type": "string"
+                }
+            },
+            "required": ["refresh"],
+        }
+    },
     responses={
         200: OpenApiResponse(
             description="Successfully logged out"
@@ -239,6 +340,7 @@ class RegisterView(generics.CreateAPIView):
         ),
     },
 )
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -402,5 +504,102 @@ def web_dashboard(request):
             "students_per_course": students_per_course,
 
             "recent_students": recent_students,
+        },
+    )
+from datetime import date
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .models import Attendance, Student
+@login_required
+def attendance_page(request):
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "Only staff members can access attendance."
+        )
+        return redirect("student_dashboard")
+
+    selected_date = request.GET.get("date") or str(date.today())
+
+    students = Student.objects.all().order_by("id")
+
+    attendance_records = Attendance.objects.filter(
+        date=selected_date
+    )
+
+    attendance_map = {
+        record.student_id: record.status
+        for record in attendance_records
+    }
+
+    if request.method == "POST":
+        selected_date = request.POST.get("date")
+
+        for student in students:
+            status_value = request.POST.get(
+                f"status_{student.id}"
+            )
+
+            if status_value in ["Present", "Absent"]:
+                Attendance.objects.update_or_create(
+                    student=student,
+                    date=selected_date,
+                    defaults={
+                        "status": status_value
+                    }
+                )
+
+        messages.success(
+            request,
+            "Attendance saved successfully."
+        )
+
+        return redirect(
+            f"/api/attendance/?date={selected_date}"
+        )
+
+    # Add status directly to each student
+    for student in students:
+        student.attendance_status = attendance_map.get(
+            student.id,
+            "Present"
+        )
+
+    return render(
+        request,
+        "students/attendance.html",
+        {
+            "students": students,
+            "selected_date": selected_date,
+        },
+    )
+
+@login_required
+def student_attendance(request):
+    if request.user.is_staff:
+        return redirect("attendance")
+
+    try:
+        student = request.user.student_profile
+    except Student.DoesNotExist:
+        messages.error(
+            request,
+            "No student profile is linked to this account."
+        )
+        logout(request)
+        return redirect("web_login")
+
+    attendance_records = Attendance.objects.filter(
+        student=student
+    ).order_by("-date")
+
+    return render(
+        request,
+        "students/student_attendance.html",
+        {
+            "student": student,
+            "attendance_records": attendance_records,
         },
     )

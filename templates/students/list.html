@@ -13,13 +13,16 @@
         </p>
     </div>
 
-    <a
-        href="{% url 'student_create' %}"
-        class="btn btn-primary mt-3 mt-md-0"
-    >
-        + Add Student
-    </a>
+  {% if user.is_staff %}
 
+<a
+    href="{% url 'student_create' %}"
+    class="btn btn-primary mt-3 mt-md-0"
+>
+    + Add Student
+</a>
+
+{% endif %}
 </div>
 
 

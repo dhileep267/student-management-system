@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Student Login | StudentMS{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center align-items-center" style="min-height: 75vh;">
+
+    <div class="col-sm-10 col-md-6 col-lg-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4 p-md-5">
+
+                <div class="text-center mb-4">
+
+                    <div class="fs-1 mb-2">
+                        👨‍🎓
+                    </div>
+
+                    <h2 class="fw-bold mb-1">
+                        Student Login
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Login to your student account
+                    </p>
+
+                </div>
+
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div
+                            class="alert alert-danger alert-dismissible fade show"
+                            role="alert"
+                        >
+
+                            {{ message }}
+
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close"
+                            ></button>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+
+                    <div class="mb-3">
+
+                        <label
+                            for="username"
+                            class="form-label fw-semibold"
+                        >
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            class="form-control"
+                            placeholder="Enter student username"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="mb-4">
+
+                        <label
+                            for="password"
+                            class="form-label fw-semibold"
+                        >
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100 py-2"
+                    >
+                        🔐 Student Login
+                    </button>
+
+                </form>
+
+
+                <div class="text-center mt-3">
+
+                    <a
+                        href="{% url 'web_login' %}"
+                        class="text-decoration-none"
+                    >
+                        ← Back to Login Selection
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <p class="text-center text-muted small mt-3">
+            Student Management System
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

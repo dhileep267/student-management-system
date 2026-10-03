@@ -1,4 +1,3 @@
-```html
 {% load static %}
 
 <!DOCTYPE html>
@@ -19,7 +18,7 @@
         {% endblock %}
     </title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap CSS -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -28,123 +27,304 @@
     <!-- Custom CSS -->
     <link
         rel="stylesheet"
-        href="{% static 'css/style.css' %}"
+        href="{% static 'style.css' %}"
     >
 
 </head>
 
-<body class="bg-light">
 
-<!-- =========================
+<body>
+
+
+<!-- ==================================================
      NAVBAR
-========================= -->
+================================================== -->
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 
-    <div class="container-fluid px-4">
+    <div class="container">
 
-        <!-- BRAND -->
-        <a
-            class="navbar-brand fw-bold fs-4"
-            href="{% url 'student_list' %}"
-        >
-            🎓 StudentMS
-        </a>
 
-        <!-- MOBILE MENU BUTTON -->
+        <!-- =========================
+             BRAND
+        ========================= -->
+
+        {% if user.is_authenticated %}
+
+            {% if user.is_staff %}
+
+                <a
+                    class="navbar-brand fw-bold"
+                    href="{% url 'web_dashboard' %}"
+                >
+                    🎓 StudentMS
+                </a>
+
+            {% else %}
+
+                <a
+                    class="navbar-brand fw-bold"
+                    href="{% url 'student_dashboard' %}"
+                >
+                    🎓 StudentMS
+                </a>
+
+            {% endif %}
+
+        {% else %}
+
+            <a
+                class="navbar-brand fw-bold"
+                href="{% url 'web_login' %}"
+            >
+                🎓 StudentMS
+            </a>
+
+        {% endif %}
+
+
+        <!-- =========================
+             MOBILE MENU BUTTON
+        ========================= -->
+
         <button
             class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
-            data-bs-target="#mainNavbar"
-            aria-controls="mainNavbar"
+            data-bs-target="#navbarContent"
+            aria-controls="navbarContent"
             aria-expanded="false"
             aria-label="Toggle navigation"
         >
+
             <span class="navbar-toggler-icon"></span>
+
         </button>
 
-        <!-- NAVIGATION -->
+
+        <!-- =========================
+             NAVBAR CONTENT
+        ========================= -->
+
         <div
             class="collapse navbar-collapse"
-            id="mainNavbar"
+            id="navbarContent"
         >
 
-            {% if user.is_authenticated %}
 
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+            <!-- ==================================================
+                 LEFT SIDE NAVIGATION
+            ================================================== -->
 
-                    <!-- DASHBOARD -->
+            <ul class="navbar-nav me-auto">
+
+
+                {% if user.is_authenticated %}
+
+
+                    <!-- ==================================================
+                         STAFF NAVIGATION
+                    ================================================== -->
+
+                    {% if user.is_staff %}
+
+
+                        <!-- Dashboard -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'web_dashboard' %}"
+                            >
+                                📊 Dashboard
+                            </a>
+
+                        </li>
+
+
+                        <!-- Students -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'student_list' %}"
+                            >
+                                👨‍🎓 Students
+                            </a>
+
+                        </li>
+
+
+                        <!-- Add Student -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'student_create' %}"
+                            >
+                                ➕ Add Student
+                            </a>
+
+                        </li>
+
+
+                        <!-- Attendance -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'attendance' %}"
+                            >
+                                📋 Attendance
+                            </a>
+
+                        </li>
+
+
+                        <!-- API Documentation -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'swagger-ui' %}"
+                            >
+                                🔗 API Docs
+                            </a>
+
+                        </li>
+
+
+                    {% else %}
+
+
+                        <!-- ==================================================
+                             STUDENT NAVIGATION
+                        ================================================== -->
+
+
+                        <!-- My Dashboard -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'student_dashboard' %}"
+                            >
+                                📊 My Dashboard
+                            </a>
+
+                        </li>
+
+
+                        <!-- My Details -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'student_list' %}"
+                            >
+                                👤 My Details
+                            </a>
+
+                        </li>
+
+
+                        <!-- My Attendance -->
+
+                        <li class="nav-item">
+
+                            <a
+                                class="nav-link"
+                                href="{% url 'student_attendance' %}"
+                            >
+                                📋 My Attendance
+                            </a>
+
+                        </li>
+
+
+                    {% endif %}
+
+
+                {% endif %}
+
+            </ul>
+
+
+            <!-- ==================================================
+                 RIGHT SIDE NAVIGATION
+            ================================================== -->
+
+            <ul class="navbar-nav">
+
+
+                {% if user.is_authenticated %}
+
+
+                    <!-- Username -->
+
+                    <li class="nav-item">
+
+                        <span class="nav-link text-white">
+
+                            👋 {{ user.username }}
+
+                        </span>
+
+                    </li>
+
+
+                    <!-- Logout -->
+
+                    <li class="nav-item">
+
+                        <form
+                            method="POST"
+                            action="{% url 'web_logout' %}"
+                            class="d-inline"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline-light btn-sm mt-1"
+                            >
+                                Logout
+                            </button>
+
+                        </form>
+
+                    </li>
+
+
+                {% else %}
+
+
+                    <!-- Login -->
+
                     <li class="nav-item">
 
                         <a
                             class="nav-link"
-                            href="{% url 'web_dashboard' %}"
+                            href="{% url 'web_login' %}"
                         >
-                            📊 Dashboard
+                            Login
                         </a>
 
                     </li>
 
-                    <!-- STUDENTS -->
-                    <li class="nav-item">
 
-                        <a
-                            class="nav-link"
-                            href="{% url 'student_list' %}"
-                        >
-                            👨‍🎓 Students
-                        </a>
+                {% endif %}
 
-                    </li>
 
-                    <!-- ADD STUDENT -->
-                    <li class="nav-item">
-
-                        <a
-                            class="nav-link"
-                            href="{% url 'student_create' %}"
-                        >
-                            ➕ Add Student
-                        </a>
-
-                    </li>
-
-                </ul>
-
-                <!-- USER AREA -->
-                <div class="d-flex align-items-center gap-3">
-
-                    <span class="text-white">
-
-                        Hi,
-                        <strong>
-                            {{ user.username }}
-                        </strong>
-
-                    </span>
-
-                    <!-- LOGOUT -->
-                    <form
-                        method="post"
-                        action="{% url 'web_logout' %}"
-                        class="d-inline"
-                    >
-
-                        {% csrf_token %}
-
-                        <button
-                            type="submit"
-                            class="btn btn-danger btn-sm"
-                        >
-                            Logout
-                        </button>
-
-                    </form>
-
-                </div>
-
-            {% endif %}
+            </ul>
 
         </div>
 
@@ -153,54 +333,52 @@
 </nav>
 
 
-<!-- =========================
-     MAIN CONTENT
-========================= -->
+<!-- ==================================================
+     DJANGO MESSAGES
+================================================== -->
 
-<main class="container-fluid px-4 py-4">
-
-    <!-- DJANGO MESSAGES -->
+<div class="container mt-3">
 
     {% if messages %}
 
         {% for message in messages %}
 
             <div
-                class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show"
+                class="alert alert-{{ message.tags }}"
                 role="alert"
             >
-
                 {{ message }}
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close"
-                ></button>
-
             </div>
 
         {% endfor %}
 
     {% endif %}
 
+</div>
 
-    <!-- PAGE CONTENT -->
+
+<!-- ==================================================
+     MAIN CONTENT
+================================================== -->
+
+<main>
 
     {% block content %}
+
     {% endblock %}
 
 </main>
 
 
-<!-- Bootstrap JavaScript -->
+<!-- ==================================================
+     BOOTSTRAP JAVASCRIPT
+================================================== -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
 ></script>
 
+
 </body>
 
 </html>
-

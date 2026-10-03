@@ -6,13 +6,11 @@
 
 <div class="row justify-content-center align-items-center" style="min-height: 75vh;">
 
-    <div class="col-sm-10 col-md-6 col-lg-4">
+    <div class="col-sm-10 col-md-7 col-lg-5">
 
         <div class="card border-0 shadow-sm">
 
             <div class="card-body p-4 p-md-5">
-
-                <!-- LOGO / TITLE -->
 
                 <div class="text-center mb-4">
 
@@ -24,32 +22,18 @@
                         StudentMS
                     </h2>
 
-                    <p class="text-muted mb-0">
-                        Login to your account
+                    <p class="text-muted">
+                        Select your login type
                     </p>
 
                 </div>
-
-
-                <!-- MESSAGES -->
 
                 {% if messages %}
 
                     {% for message in messages %}
 
-                        <div
-                            class="alert alert-danger alert-dismissible fade show"
-                            role="alert"
-                        >
-
+                        <div class="alert alert-danger">
                             {{ message }}
-
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="alert"
-                            ></button>
-
                         </div>
 
                     {% endfor %}
@@ -57,76 +41,36 @@
                 {% endif %}
 
 
-                <!-- LOGIN FORM -->
+                <!-- STAFF LOGIN -->
 
-                <form method="POST">
+                <a
+                    href="{% url 'staff_login' %}"
+                    class="btn btn-dark w-100 py-3 mb-3"
+                >
+                    👨‍💼 Staff Login
 
-                    {% csrf_token %}
-
-
-                    <!-- USERNAME -->
-
-                    <div class="mb-3">
-
-                        <label
-                            for="username"
-                            class="form-label fw-semibold"
-                        >
-                            Username
-                        </label>
-
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            class="form-control"
-                            placeholder="Enter your username"
-                            autocomplete="username"
-                            required
-                        >
-
-                    </div>
+                    <small class="d-block mt-1 opacity-75">
+                        Staff / Administrator
+                    </small>
+                </a>
 
 
-                    <!-- PASSWORD -->
+                <!-- STUDENT LOGIN -->
 
-                    <div class="mb-4">
+                <a
+                    href="{% url 'student_login' %}"
+                    class="btn btn-primary w-100 py-3"
+                >
+                    👨‍🎓 Student Login
 
-                        <label
-                            for="password"
-                            class="form-label fw-semibold"
-                        >
-                            Password
-                        </label>
-
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="form-control"
-                            placeholder="Enter your password"
-                            autocomplete="current-password"
-                            required
-                        >
-
-                    </div>
-
-
-                    <!-- LOGIN BUTTON -->
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary w-100 py-2"
-                    >
-                        🔐 Login
-                    </button>
-
-                </form>
+                    <small class="d-block mt-1 opacity-75">
+                        Student Account
+                    </small>
+                </a>
 
             </div>
 
         </div>
-
 
         <p class="text-center text-muted small mt-3">
             Student Management System
@@ -135,9 +79,5 @@
     </div>
 
 </div>
-<p class="text-center mt-3">
-    Don't have an account?
-    <a href="{% url 'web_register' %}">Create Account</a>
-</p>
 
 {% endblock %}

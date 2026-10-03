@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard | StudentMS{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+
+    <h1 class="fw-bold mb-1">
+        👨‍🎓 My Dashboard
+    </h1>
+
+    <p class="text-muted mb-0">
+        Welcome, {{ student.name }}
+    </p>
+
+</div>
+
+
+<div class="row g-4">
+
+    <!-- PERSONAL DETAILS -->
+
+    <div class="col-lg-8">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-4">
+                    👤 My Details
+                </h4>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Student ID
+                        </small>
+
+                        <div class="fw-semibold">
+                            #{{ student.id }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Name
+                        </small>
+
+                        <div class="fw-semibold">
+                            {{ student.name }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Email
+                        </small>
+
+                        <div class="fw-semibold">
+                            {{ student.email }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Phone
+                        </small>
+
+                        <div class="fw-semibold">
+                            {{ student.phone|default:"-" }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Age
+                        </small>
+
+                        <div class="fw-semibold">
+                            {{ student.age }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Course
+                        </small>
+
+                        <div>
+
+                            <span class="badge text-bg-primary">
+                                {{ student.course }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Department
+                        </small>
+
+                        <div class="fw-semibold">
+
+                            {% if student.department %}
+                                {{ student.department.name }}
+                            {% else %}
+                                -
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- QUICK INFO -->
+
+    <div class="col-lg-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-4">
+                    📚 My Academics
+                </h4>
+
+                <div class="mb-3">
+
+                    <small class="text-muted">
+                        Course
+                    </small>
+
+                    <div class="fw-semibold">
+                        {{ student.course }}
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <small class="text-muted">
+                        Department
+                    </small>
+
+                    <div class="fw-semibold">
+
+                        {% if student.department %}
+                            {{ student.department.name }}
+                        {% else %}
+                            Not assigned
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ATTENDANCE -->
+
+    <div class="col-md-6">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold">
+                    📅 My Attendance
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Attendance information will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- COURSES -->
+
+    <div class="col-md-6">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold">
+                    📖 My Courses
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Course information will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
