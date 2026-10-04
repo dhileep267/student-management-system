@@ -1,263 +1,112 @@
-
 {% extends "base.html" %}
 
 {% block title %}
-My Dashboard | StudentMS
+Staff Dashboard | StudentMS
 {% endblock %}
 
 {% block content %}
 
 <div class="container mt-4">
 
-    <!-- Header -->
     <div class="mb-4">
-        <h1 class="fw-bold mb-1">👨‍🎓 My Dashboard</h1>
-        <p class="text-muted mb-0">
-            Welcome, {{ student.name }}
+        <h1 class="fw-bold">📊 Staff Dashboard</h1>
+        <p class="text-muted">
+            Welcome, {{ request.user.username }}
         </p>
     </div>
 
-
-    <!-- Student Details -->
+    <!-- Statistics -->
     <div class="row g-4">
 
-        <div class="col-lg-6">
-
-            <div class="card shadow-sm border-0 h-100">
-
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-
-                    <h4 class="fw-bold mb-4">
-                        👤 My Details
-                    </h4>
-
-                    <div class="mb-3">
-                        <small class="text-muted">
-                            Student ID
-                        </small>
-
-                        <div class="fw-semibold">
-                            #{{ student.id }}
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <small class="text-muted">
-                            Name
-                        </small>
-
-                        <div class="fw-semibold">
-                            {{ student.name }}
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <small class="text-muted">
-                            Email
-                        </small>
-
-                        <div class="fw-semibold">
-                            {{ student.email }}
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <small class="text-muted">
-                            Phone
-                        </small>
-
-                        <div class="fw-semibold">
-                            {{ student.phone|default:"-" }}
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <small class="text-muted">
-                            Age
-                        </small>
-
-                        <div class="fw-semibold">
-                            {{ student.age }}
-                        </div>
-                    </div>
-
-                    <div>
-                        <small class="text-muted">
-                            Course
-                        </small>
-
-                        <div class="fw-semibold">
-                            {% if student.course %}
-                                {{ student.course.name }}
-                            {% else %}
-                                Not assigned
-                            {% endif %}
-                        </div>
-                    </div>
-
+                    <h6 class="text-muted">Total Students</h6>
+                    <h2 class="fw-bold">{{ total_students }}</h2>
                 </div>
-
             </div>
-
         </div>
 
-
-        <!-- Academics -->
-        <div class="col-lg-6">
-
-            <div class="card shadow-sm border-0 h-100">
-
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
                 <div class="card-body">
-
-                    <h4 class="fw-bold mb-4">
-                        📚 My Academics
-                    </h4>
-
-                    <div class="mb-3">
-
-                        <small class="text-muted">
-                            Course
-                        </small>
-
-                        <div class="fw-semibold">
-
-                            {% if student.course %}
-                                {{ student.course.name }}
-                            {% else %}
-                                Not assigned
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <small class="text-muted">
-                            Department
-                        </small>
-
-                        <div class="fw-semibold">
-
-                            {% if student.department %}
-                                {{ student.department.name }}
-                            {% else %}
-                                Not assigned
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
+                    <h6 class="text-muted">Total Departments</h6>
+                    <h2 class="fw-bold">{{ total_departments }}</h2>
                 </div>
-
             </div>
+        </div>
 
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Average Age</h6>
+                    <h2 class="fw-bold">{{ average_age }}</h2>
+                </div>
+            </div>
         </div>
 
     </div>
 
+    <!-- Students by Department -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
 
-    <!-- Attendance -->
-    <div class="row g-4 mt-1">
+            <h4 class="fw-bold mb-3">
+                🏫 Students by Department
+            </h4>
 
-        <div class="col-lg-6">
-
-            <div class="card shadow-sm border-0 h-100">
-
-                <div class="card-body">
-
-                    <h4 class="fw-bold mb-3">
-                        📅 My Attendance
-                    </h4>
-
-                    <p class="text-muted">
-                        View your attendance records.
-                    </p>
-
-                    <a
-                        href="{% url 'student_attendance' %}"
-                        class="btn btn-primary"
-                    >
-                        📋 View My Attendance
-                    </a>
-
+            {% for item in students_per_department %}
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <span>{{ item.name }}</span>
+                    <strong>{{ item.student_count }}</strong>
                 </div>
-
-            </div>
+            {% empty %}
+                <p class="text-muted">No departments found.</p>
+            {% endfor %}
 
         </div>
+    </div>
 
+    <!-- Students by Course -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
 
-        <!-- Course -->
-        <div class="col-lg-6">
+            <h4 class="fw-bold mb-3">
+                📚 Students by Course
+            </h4>
 
-            <div class="card shadow-sm border-0 h-100">
-
-                <div class="card-body">
-
-                    <h4 class="fw-bold mb-3">
-                        📖 My Course
-                    </h4>
-
-                    {% if student.course %}
-
-                        <div class="mb-3">
-
-                            <small class="text-muted">
-                                Course Name
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ student.course.name }}
-                            </div>
-
-                        </div>
-
-
-                        <div class="mb-3">
-
-                            <small class="text-muted">
-                                Duration
-                            </small>
-
-                            <div class="fw-semibold">
-                                {{ student.course.duration|default:"Not provided" }}
-                            </div>
-
-                        </div>
-
-
-                        <div>
-
-                            <small class="text-muted">
-                                Description
-                            </small>
-
-                            <div>
-                                {{ student.course.description|default:"No description available." }}
-                            </div>
-
-                        </div>
-
-                    {% else %}
-
-                        <p class="text-muted mb-0">
-                            Course information not available.
-                        </p>
-
-                    {% endif %}
-
+            {% for item in students_per_course %}
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <span>{{ item.course }}</span>
+                    <strong>{{ item.student_count }}</strong>
                 </div>
-
-            </div>
+            {% empty %}
+                <p class="text-muted">No course data found.</p>
+            {% endfor %}
 
         </div>
+    </div>
 
+    <!-- Recent Students -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
+
+            <h4 class="fw-bold mb-3">
+                👨‍🎓 Recent Students
+            </h4>
+
+            {% for student in recent_students %}
+                <div class="d-flex justify-content-between border-bottom py-2">
+                    <span>{{ student.name }}</span>
+                    <span>{{ student.email }}</span>
+                </div>
+            {% empty %}
+                <p class="text-muted">No students found.</p>
+            {% endfor %}
+
+        </div>
     </div>
 
 </div>
 
 {% endblock %}
-
