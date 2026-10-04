@@ -13,6 +13,11 @@ Staff Dashboard | StudentMS
         <p class="text-muted">
             Welcome, {{ request.user.username }}
         </p>
+        {% if request.user.is_superuser %}
+    <a href="{% url 'create_staff' %}" class="btn btn-primary">
+        👥 Create Staff
+    </a>
+{% endif %}
     </div>
 
     <!-- Statistics -->
