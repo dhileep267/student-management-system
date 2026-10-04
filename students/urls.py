@@ -133,4 +133,5 @@ path(
     name="student_attendance"
 ),
 path("register/", web_register, name="web_register"),
+path("staff-login/", views.staff_login, name="staff_login"),
 ]

@@ -45,11 +45,20 @@ def staff_login(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
+        print("USERNAME:", username)
+        print("PASSWORD:", password)
+
         user = authenticate(
             request,
             username=username,
             password=password
         )
+
+        print("AUTHENTICATED USER:", user)
+
+        if user is not None:
+            print("IS STAFF:", user.is_staff)
+            print("IS ACTIVE:", user.is_active)
 
         if user is not None and user.is_staff:
             login(request, user)
@@ -591,6 +600,8 @@ class DashboardView(APIView):
                 "students_per_course": course_data,
             }
         )
+
+    
 @login_required
 def web_dashboard(request):
 
@@ -847,7 +858,7 @@ def create_staff(request):
             f"Staff account '{username}' created successfully."
         )
 
-        return redirect("dashboard")
+        return redirect("web_dashboard")
 
     return render(
         request,

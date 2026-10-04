@@ -7,7 +7,8 @@ from students.views import (
     web_logout,
     web_register,
     web_dashboard,
-    create_staff
+    create_staff,
+    staff_login
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -103,6 +104,11 @@ urlpatterns = [
     "create-staff/",
     create_staff,
     name="create_staff"
+),
+path(
+    "staff-login/",
+    staff_login,
+    name="staff_login"
 ),
 ]
 
