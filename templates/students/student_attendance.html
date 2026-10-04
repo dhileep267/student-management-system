@@ -1,22 +1,158 @@
+
 {% extends "base.html" %}
 
-{% block title %}My Attendance | StudentMS{% endblock %}
+{% block title %}
+My Attendance | StudentMS
+{% endblock %}
 
 {% block content %}
 
 <div class="container mt-4">
 
+    <!-- Header -->
     <div class="mb-4">
-        <h2 class="fw-bold">📋 My Attendance</h2>
+
+        <h2 class="fw-bold">
+            📋 My Attendance
+        </h2>
+
         <p class="text-muted">
             {{ student.name }}'s attendance records
         </p>
+
     </div>
 
 
-    <div class="card shadow-sm">
+    <!-- Attendance Summary -->
+    <div class="row g-4 mb-4">
+
+        <!-- Total Classes -->
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Total Classes
+                    </small>
+
+                    <h3 class="fw-bold mb-0">
+                        {{ total_classes }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Present -->
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Present
+                    </small>
+
+                    <h3 class="fw-bold text-success mb-0">
+                        {{ present_count }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Absent -->
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Absent
+                    </small>
+
+                    <h3 class="fw-bold text-danger mb-0">
+                        {{ absent_count }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Percentage -->
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        Attendance
+                    </small>
+
+               {% if attendance_percentage >= 75 %}
+
+    <h3 class="fw-bold text-success mb-0">
+        {{ attendance_percentage }}%
+    </h3>
+
+    <small class="text-success">
+        🟢 Good Attendance
+    </small>
+
+{% elif attendance_percentage >= 60 %}
+
+    <h3 class="fw-bold text-warning mb-0">
+        {{ attendance_percentage }}%
+    </h3>
+
+    <small class="text-warning">
+        🟡 Attendance Warning
+    </small>
+
+{% else %}
+
+    <h3 class="fw-bold text-danger mb-0">
+        {{ attendance_percentage }}%
+    </h3>
+
+    <small class="text-danger">
+        🔴 Low Attendance
+    </small>
+
+{% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Attendance Records -->
+    <div class="card shadow-sm border-0">
 
         <div class="card-body">
+
+            <h4 class="fw-bold mb-3">
+                📅 Attendance Records
+            </h4>
+
 
             <div class="table-responsive">
 
@@ -90,3 +226,4 @@
 </div>
 
 {% endblock %}
+

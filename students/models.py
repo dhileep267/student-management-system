@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 
 
 class Department(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(
+        max_length=100
+    )
 
     def __str__(self):
         return self.name
@@ -18,23 +20,32 @@ class Student(models.Model):
         blank=True,
     )
 
-    name = models.CharField(max_length=100)
-    age = models.PositiveIntegerField()
-    email = models.EmailField(unique=True)
+    name = models.CharField(
+        max_length=100
+    )
 
-    course = models.CharField(
-        max_length=100,
-        default="BSc AI/ML"
+    age = models.PositiveIntegerField()
+
+    email = models.EmailField(
+        unique=True
+    )
+
+    course = models.ForeignKey(
+        "Course",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="students",
     )
 
     phone = models.CharField(
         max_length=15,
         blank=True,
-        null=True
+        null=True,
     )
 
     created_at = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     department = models.ForeignKey(
@@ -48,7 +59,7 @@ class Student(models.Model):
     profile_image = models.ImageField(
         upload_to="students/",
         blank=True,
-        null=True
+        null=True,
     )
 
     def __str__(self):
@@ -59,43 +70,41 @@ class StudentProfile(models.Model):
     student = models.OneToOneField(
         Student,
         on_delete=models.CASCADE,
-        related_name="profile"
+        related_name="profile",
     )
 
     address = models.TextField(
-        blank=True
+        blank=True,
     )
 
     date_of_birth = models.DateField(
         null=True,
-        blank=True
+        blank=True,
     )
 
     def __str__(self):
         return f"{self.student.name} Profile"
 
+
 class Attendance(models.Model):
-
-    STATUS_CHOICES = [
-        ("Present", "Present"),
-        ("Absent", "Absent"),
-    ]
-
     student = models.ForeignKey(
         Student,
         on_delete=models.CASCADE,
-        related_name="attendance_records"
+        related_name="attendance_records",
     )
 
     date = models.DateField()
 
     status = models.CharField(
         max_length=10,
-        choices=STATUS_CHOICES
+        choices=[
+            ("Present", "Present"),
+            ("Absent", "Absent"),
+        ],
     )
 
     created_at = models.DateTimeField(
-        auto_now_add=True
+        auto_now_add=True,
     )
 
     class Meta:
@@ -103,19 +112,22 @@ class Attendance(models.Model):
         ordering = ["-date"]
 
     def __str__(self):
-        return f"{self.student.name} - {self.date} - {self.status}"    
-class Course(models.Model):
+        return f"{self.student.name} - {self.date} - {self.status}"
 
-    name = models.CharField(max_length=100)
+
+class Course(models.Model):
+    name = models.CharField(
+        max_length=100,
+    )
 
     description = models.TextField(
-        blank=True
+        blank=True,
     )
 
     duration = models.CharField(
         max_length=50,
-        blank=True
+        blank=True,
     )
 
     def __str__(self):
-        return self.name    
+        return self.name

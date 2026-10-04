@@ -1,58 +1,166 @@
+
 {% extends "base.html" %}
 
-{% block title %}Register | Student Management System{% endblock %}
+{% block title %}
+Register | StudentMS
+{% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
 
-            <div class="card shadow">
-                <div class="card-body p-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
 
-                    <h2 class="text-center mb-4">
-                        Create Account
-                    </h2>
+                <h2 class="fw-bold text-center mb-4">
+                    🎓 Student Registration
+                </h2>
 
-                    <form method="POST">
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input
-                                type="text"
-                                name="username"
-                                class="form-control"
-                                required
-                            >
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
                         </div>
+                    {% endfor %}
+                {% endif %}
 
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input
-                                type="password"
-                                name="password"
-                                class="form-control"
-                                required
-                            >
-                        </div>
+                <form method="POST">
+                    {% csrf_token %}
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            Register
-                        </button>
-                    </form>
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input
+                            type="text"
+                            name="username"
+                            class="form-control"
+                            placeholder="Enter username"
+                            required
+                        >
+                    </div>
 
-                    <p class="text-center mt-3 mb-0">
-                        Already have an account?
-                        <a href="{% url 'web_login' %}">Login</a>
-                    </p>
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control"
+                            placeholder="Enter password"
+                            required
+                        >
+                    </div>
 
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            placeholder="Enter full name"
+                            required
+                        >
+                    </div>
+
+                    <!-- Age -->
+                    <div class="mb-3">
+                        <label class="form-label">Age</label>
+                        <input
+                            type="number"
+                            name="age"
+                            class="form-control"
+                            placeholder="Enter age"
+                            min="15"
+                            max="60"
+                            required
+                        >
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            class="form-control"
+                            placeholder="Enter email"
+                            required
+                        >
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input
+                            type="text"
+                            name="phone"
+                            class="form-control"
+                            placeholder="Enter phone number"
+                        >
+                    </div>
+
+                    <!-- Course -->
+                    <div class="mb-3">
+                        <label class="form-label">Course</label>
+
+                        <select
+                            name="course"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">Select Course</option>
+
+                            {% for course in courses %}
+                                <option value="{{ course.id }}">
+                                    {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="mb-4">
+                        <label class="form-label">Department</label>
+
+                        <select
+                            name="department"
+                            class="form-select"
+                            required
+                        >
+                            <option value="">Select Department</option>
+
+                            {% for department in departments %}
+                                <option value="{{ department.id }}">
+                                    {{ department.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Submit -->
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+                        Register
+                    </button>
+
+                </form>
+
+                <div class="text-center mt-3">
+                    Already have an account?
+                    <a href="{% url 'web_login' %}">
+                        Login
+                    </a>
                 </div>
-            </div>
 
+            </div>
         </div>
+
     </div>
 </div>
 
 {% endblock %}
+

@@ -17,7 +17,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from .forms import StudentForm
-from .models import Student, Department
+from .models import Student, Department,StudentProfile,Course
 from .permissions import IsAdminOrReadOnly
 from .serializers import StudentSerializer, RegisterSerializer
 
@@ -36,10 +36,12 @@ def web_login(request):
     )
 
 def staff_login(request):
+
     if request.user.is_authenticated:
-        return redirect("student_list")
+        return redirect("web_dashboard")
 
     if request.method == "POST":
+
         username = request.POST.get("username")
         password = request.POST.get("password")
 
@@ -51,14 +53,17 @@ def staff_login(request):
 
         if user is not None and user.is_staff:
             login(request, user)
-            return redirect("student_list")
+            return redirect("web_dashboard")
 
         messages.error(
             request,
             "Invalid staff username or password."
         )
 
-    return render(request, "students/staff_login.html")
+    return render(
+        request,
+        "students/staff_login.html"
+    )
 
 
 def student_login(request):
@@ -77,7 +82,7 @@ def student_login(request):
 
         if user is not None and not user.is_staff:
             login(request, user)
-            return redirect("student_list")
+            return redirect("student_dashboard")
 
         messages.error(
             request,
@@ -85,10 +90,14 @@ def student_login(request):
         )
 
     return render(request, "students/student_login.html")
+
+
+
 @login_required
 def student_dashboard(request):
+
     if request.user.is_staff:
-        return redirect("web_dashboard")
+        return redirect("dashboard")
 
     try:
         student = request.user.student_profile
@@ -100,39 +109,188 @@ def student_dashboard(request):
         logout(request)
         return redirect("web_login")
 
+    # Attendance
+    attendance_records = Attendance.objects.filter(
+        student=student
+    )
+
+    total_classes = attendance_records.count()
+
+    present_count = attendance_records.filter(
+        status="Present"
+    ).count()
+
+    absent_count = attendance_records.filter(
+        status="Absent"
+    ).count()
+
+    if total_classes > 0:
+        attendance_percentage = round(
+            (present_count / total_classes) * 100,
+            2
+        )
+    else:
+        attendance_percentage = 0
+
     return render(
         request,
         "students/student_dashboard.html",
         {
             "student": student,
-        }
+            "total_classes": total_classes,
+            "present_count": present_count,
+            "absent_count": absent_count,
+            "attendance_percentage": attendance_percentage,
+        },
     )
+
+
+
+
 def web_register(request):
     if request.user.is_authenticated:
-        return redirect("student_list")
+        return redirect("student_dashboard")
 
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+        name = request.POST.get("name", "").strip()
+        age = request.POST.get("age", "").strip()
+        email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        course_id = request.POST.get("course", "").strip()
+        department_id = request.POST.get("department", "").strip()
 
+        # Check required fields
+        if not username or not password or not name or not age or not email:
+            messages.error(
+                request,
+                "Please fill all required fields."
+            )
+            return render(
+                request,
+                "students/register.html",
+                {
+                    "courses": Course.objects.all(),
+                    "departments": Department.objects.all(),
+                }
+            )
+
+        # Check username
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists.")
-            return render(request, "students/register.html")
+            messages.error(
+                request,
+                "Username already exists."
+            )
+            return render(
+                request,
+                "students/register.html",
+                {
+                    "courses": Course.objects.all(),
+                    "departments": Department.objects.all(),
+                }
+            )
 
-        if not username or not password:
-            messages.error(request, "Username and password are required.")
-            return render(request, "students/register.html")
+        # Check email
+        if Student.objects.filter(email=email).exists():
+            messages.error(
+                request,
+                "Email already exists."
+            )
+            return render(
+                request,
+                "students/register.html",
+                {
+                    "courses": Course.objects.all(),
+                    "departments": Department.objects.all(),
+                }
+            )
 
+        # Validate age
+        try:
+            age = int(age)
+        except ValueError:
+            messages.error(
+                request,
+                "Age must be a number."
+            )
+            return render(
+                request,
+                "students/register.html",
+                {
+                    "courses": Course.objects.all(),
+                    "departments": Department.objects.all(),
+                }
+            )
+
+        if age < 15 or age > 60:
+            messages.error(
+                request,
+                "Age must be between 15 and 60."
+            )
+            return render(
+                request,
+                "students/register.html",
+                {
+                    "courses": Course.objects.all(),
+                    "departments": Department.objects.all(),
+                }
+            )
+
+        # Get Course object
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            messages.error(
+                request,
+                "Please select a valid course."
+            )
+            return render(
+                request,
+                "students/register.html",
+                {
+                    "courses": Course.objects.all(),
+                    "departments": Department.objects.all(),
+                }
+            )
+
+        # Create Django user
         user = User.objects.create_user(
             username=username,
             password=password
         )
 
+        # Create student
+        student = Student.objects.create(
+            user=user,
+            name=name,
+            age=age,
+            email=email,
+            phone=phone,
+            course=course,
+            department_id=department_id,
+        )
+
+        # Create student profile
+        StudentProfile.objects.create(
+            student=student
+        )
+
+        # Login automatically
         login(request, user)
 
-        return redirect("student_list")
+        return redirect("student_dashboard")
 
-    return render(request, "students/register.html")
+    return render(
+        request,
+        "students/register.html",
+        {
+            "courses": Course.objects.all(),
+            "departments": Department.objects.all(),
+        }
+    )
+
+
 def web_logout(request):
     logout(request)
     return redirect("web_login")
@@ -433,9 +591,16 @@ class DashboardView(APIView):
                 "students_per_course": course_data,
             }
         )
-
 @login_required
 def web_dashboard(request):
+
+    # Only staff can access the staff dashboard
+    if not request.user.is_staff:
+        messages.error(
+            request,
+            "Only staff members can access the staff dashboard."
+        )
+        return redirect("student_dashboard")
 
     # =========================
     # BASIC STATISTICS
@@ -490,7 +655,6 @@ def web_dashboard(request):
         "dashboard.html",
         {
             "total_students": total_students,
-
             "total_departments": total_departments,
 
             "average_age": (
@@ -512,8 +676,11 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Attendance, Student
+
+
 @login_required
 def attendance_page(request):
+
     if not request.user.is_staff:
         messages.error(
             request,
@@ -535,14 +702,17 @@ def attendance_page(request):
     }
 
     if request.method == "POST":
+
         selected_date = request.POST.get("date")
 
         for student in students:
+
             status_value = request.POST.get(
                 f"status_{student.id}"
             )
 
             if status_value in ["Present", "Absent"]:
+
                 Attendance.objects.update_or_create(
                     student=student,
                     date=selected_date,
@@ -557,14 +727,15 @@ def attendance_page(request):
         )
 
         return redirect(
-            f"/api/attendance/?date={selected_date}"
+            f"/api/staff-attendance/?date={selected_date}"
         )
 
-    # Add status directly to each student
+    # Add attendance status to each student
     for student in students:
+
         student.attendance_status = attendance_map.get(
             student.id,
-            "Present"
+            "NOT MARKED"
         )
 
     return render(
@@ -575,11 +746,11 @@ def attendance_page(request):
             "selected_date": selected_date,
         },
     )
-
 @login_required
 def student_attendance(request):
+
     if request.user.is_staff:
-        return redirect("attendance")
+            return redirect("staff_attendance")
 
     try:
         student = request.user.student_profile
@@ -595,11 +766,91 @@ def student_attendance(request):
         student=student
     ).order_by("-date")
 
+    # Attendance calculations
+    total_classes = attendance_records.count()
+
+    present_count = attendance_records.filter(
+        status="Present"
+    ).count()
+
+    absent_count = attendance_records.filter(
+        status="Absent"
+    ).count()
+
+    if total_classes > 0:
+        attendance_percentage = round(
+            (present_count / total_classes) * 100,
+            2
+        )
+    else:
+        attendance_percentage = 0
+
     return render(
         request,
         "students/student_attendance.html",
         {
             "student": student,
             "attendance_records": attendance_records,
+            "total_classes": total_classes,
+            "present_count": present_count,
+            "absent_count": absent_count,
+            "attendance_percentage": attendance_percentage,
         },
     )
+
+@login_required
+def create_staff(request):
+
+    # Only superusers can create staff accounts
+    if not request.user.is_superuser:
+        messages.error(
+            request,
+            "Only administrators can create staff accounts."
+        )
+        return redirect("dashboard")
+
+    if request.method == "POST":
+
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "")
+
+        if not username or not password:
+            messages.error(
+                request,
+                "Username and password are required."
+            )
+            return render(
+                request,
+                "students/create_staff.html"
+            )
+
+        if User.objects.filter(username=username).exists():
+            messages.error(
+                request,
+                "Username already exists."
+            )
+            return render(
+                request,
+                "students/create_staff.html"
+            )
+
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
+
+        user.is_staff = True
+        user.save()
+
+        messages.success(
+            request,
+            f"Staff account '{username}' created successfully."
+        )
+
+        return redirect("dashboard")
+
+    return render(
+        request,
+        "students/create_staff.html"
+    )
+

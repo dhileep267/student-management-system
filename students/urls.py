@@ -1,4 +1,5 @@
 from django.urls import path, include
+from .import views
 
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
@@ -13,6 +14,7 @@ from .views import (
     DashboardView,
     web_login,
     web_logout,
+    web_register,
     web_dashboard,
     staff_login,
     student_login,
@@ -23,7 +25,6 @@ from .views import (
     attendance_page,
     student_attendance,
 )
-
 
 router = DefaultRouter()
 
@@ -114,13 +115,11 @@ urlpatterns = [
         student_dashboard,
         name="student_dashboard"
     ),
-
-    # Attendance
-    path(
-        "attendance/",
-        attendance_page,
-        name="attendance"
-    ),
+path(
+    "staff-attendance/",
+    attendance_page,
+    name="staff_attendance"
+),
 
     # Web logout
     path(
@@ -133,4 +132,5 @@ urlpatterns = [
     student_attendance,
     name="student_attendance"
 ),
+path("register/", web_register, name="web_register"),
 ]

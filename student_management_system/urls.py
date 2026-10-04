@@ -5,10 +5,10 @@ from students.views import (
     student_list,
     web_login,
     web_logout,
+    web_register,
     web_dashboard,
-    
+    create_staff
 )
-
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -98,6 +98,12 @@ urlpatterns = [
         name="swagger-ui"
     ),
     path("register/", web_register, name="web_register"),
+    
+    path(
+    "create-staff/",
+    create_staff,
+    name="create_staff"
+),
 ]
 
 
